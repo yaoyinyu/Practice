@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="2_13数据存储——字符指针和指针数组.vcxproj" />
+  <Project Path="2_13数据存储——字符指针和指针数组.vcxproj" Id="f0a92f93-c31f-4de7-978b-6dc1d5412672" />
 </Solution>
