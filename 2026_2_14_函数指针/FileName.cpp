@@ -1,6 +1,7 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS 1
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 
 int Add(int x, int y)
 {
@@ -42,7 +43,20 @@ void menu()
 	printf("1.add\n2.sub\n3.mul\n4.div\n0.exit\n");
 }
 
-void bubble_sort(int arr[], int sz)
+void Swap(char* buf1, char* buf2, int width)
+{
+	int i = 0;
+	for (i = 0; i < width; i++)
+	{
+		char tmp = *buf1;
+		*buf1 = *buf2;
+		*buf2 = tmp;
+		buf1++;
+		buf2++;
+	}
+}
+
+void bubble_sort(void* base, int sz, int width, int(*cmp)(const void* e1, const void* e2))
 {
 	int i = 0;
 	int j = 0;
@@ -51,14 +65,19 @@ void bubble_sort(int arr[], int sz)
 	{
 		for (j = 0; j < sz - 1 - i; j++)	//每趟内部
 		{
-			if (arr[j] > arr[j + 1])
+			if (cmp((char*)base + j * width, (char*)base + (j + 1) * width) > 0)
 			{
-				int tmp = 0;
-				tmp = arr[j];
-				arr[j] = arr[j + 1];
-				arr[j + 1] = tmp;
+				Swap((char*)base + j * width, (char*)base + (j + 1) * width, width);
 				flag = 0;
 			}
+			//if (arr[j] > arr[j + 1])
+			//{
+			//	int tmp = 0;
+			//	tmp = arr[j];
+			//	arr[j] = arr[j + 1];
+			//	arr[j + 1] = tmp;
+			//	flag = 0;
+			//}
 		}
 		if (flag == 1)
 			break;
@@ -75,7 +94,84 @@ int cmp_int(const void* e1, const void* e2)
 	//	return -1;
 	//else
 	//	return 0;
-	return (*(int*)e1 - *(int*)e2);
+	return (*(int*)e1 - *(int*)e2);		//升序
+}
+
+
+void test1()
+{
+	int arr3[] = { 20,5,8,6,4,9,2,3498,3,5,96,0 };
+	int sz = sizeof(arr3) / sizeof(arr3[0]);
+	qsort(arr3, sz, sizeof(arr3[0]), cmp_int);
+	int j = 0;
+	for (j = 0; j < sz; j++)
+	{
+		printf("%d ", arr3[j]);
+	}
+}
+
+struct Stu
+{
+	char name[20];
+	int age;
+};
+
+int smp_stu_by_name(const void* e1, const void* e2)
+{
+	return strcmp(((struct Stu*)e1)->name, ((struct Stu*)e2)->name);
+}
+
+int smp_stu_by_age(const void* e1, const void* e2)
+{
+	return (((struct Stu*)e1)->age) - (((struct Stu*)e2)->age);
+}
+
+void test2()
+{
+	struct Stu s[] = { {"zhangsan",15},{"lisi",30},{"wangwu",25} };
+	int sz = sizeof(s) / sizeof(s[0]);
+	qsort(s, sz, sizeof(s[0]), smp_stu_by_name);
+	int i = 0;
+	for (i = 0; i < sz; i++)
+	{
+		printf("姓名：%s\n", s[i].name);
+	}
+	qsort(s, sz, sizeof(s[0]), smp_stu_by_age);
+	for (i = 0; i < sz; i++)
+	{
+		printf("年龄：%d\n", s[i].age);
+	}
+}
+
+void test3()
+{
+	int arr2[] = { 20,9,7,6,5,4,8,6,2,5,12,0 };
+	//将数组排成升序
+	int sz = sizeof(arr2) / sizeof(arr2[0]);
+	bubble_sort(arr2, sz, sizeof(arr2[0]), cmp_int);
+	int j = 0;
+	for (j = 0; j < sz; j++)
+	{
+		printf("%d ", arr2[j]);
+	}
+	printf("\n");
+}
+
+void test4()
+{
+	struct Stu s1[] = { {"zhangsan",15},{"lisi",30},{"wangwu",25} };
+	int sz = sizeof(s1) / sizeof(s1[0]);
+	bubble_sort(s1, sz, sizeof(s1[0]), smp_stu_by_name);
+	int i = 0;
+	for (i = 0; i < sz; i++)
+	{
+		printf("姓名：%s\n", s1[i].name);
+	}
+	bubble_sort(s1, sz, sizeof(s1[0]), smp_stu_by_age);
+	for (i = 0; i < sz; i++)
+	{
+		printf("年龄：%d\n", s1[i].age);
+	}
 }
 
 int main()
@@ -201,23 +297,17 @@ int main()
 	// int (*(*pparr)[5])(int, int) = &parr;
 	//
 
-	int arr2[] = { 20,9,7,6,5,4,8,6,2,5,12,0 };
-	int arr3[] = { 20,5,8,6,4,9,2,3498,3,5,96,0 };
-	//将数组拍成升序
-	int sz = sizeof(arr2) / sizeof(arr2[0]);
-	bubble_sort(arr2,sz);
-	int j = 0;
-	for (j = 0; j < sz; j++)
-	{
-		printf("%d ", arr2[j]);
-	}
+	test1();		//qsort排序数字
 	printf("\n");
 
-	qsort(arr3, sz, sizeof(arr3[20]), cmp_int);
-	for (j = 0; j < sz; j++)
-	{
-		printf("%d ", arr3[j]);
-	}
+	test2();		//qsort排序结构体内容
+	printf("\n");
+
+	test3();		//bubble_sort排序数字
+	printf("\n");
+
+	test4();		//bubble_sort排序结构体内容
+	printf("\n");
 
 
 	return 0;
