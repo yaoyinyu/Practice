@@ -266,7 +266,7 @@ int main()
 	int x = 0;
 	int y = 0;
 	int ret2 = 0;
-
+	
 	//转移表
 	int (*parr[])(int, int) = { 0, Add, Sub, Mul, Div };
 
