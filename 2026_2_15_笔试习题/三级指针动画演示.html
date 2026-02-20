@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>三级指针动画演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Consolas", "微软雅黑", sans-serif;
+        }
+        body {
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        /* 代码展示区 */
+        .code-area {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .code-line {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+        .code-line.highlight {
+            color: #61afef;
+            background: rgba(97, 175, 239, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        /* 动画演示区 */
+        .animate-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .layer {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .layer-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .element-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .element {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: relative;
+            min-width: 120px;
+            text-align: center;
+        }
+        .element.current {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+        .element.pointed {
+            border-color: #2ecc71;
+            background: rgba(46, 204, 113, 0.1);
+        }
+        /* 箭头样式 */
+        .arrow {
+            position: absolute;
+            color: #e74c3c;
+            font-size: 20px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        /* 控制区 */
+        .control-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        /* 输出区 */
+        .output-area {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .output-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .output-line {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 代码展示区 -->
+        <div class="code-area" id="codeArea">
+            <div class="code-line" data-line="init">const char* c[] = { "ENTER","NEW","POINT","FIRST" };</div>
+            <div class="code-line" data-line="init">const char** cp[] = { c + 3,c + 2,c + 1,c };</div>
+            <div class="code-line" data-line="init">const char*** cpp = cp;</div>
+            <div class="code-line" data-line="1">printf("%s\n", **++cpp);</div>
+            <div class="code-line" data-line="2">printf("%s\n", *-- * ++cpp + 3);</div>
+            <div class="code-line" data-line="3">printf("%s\n", *cpp[-2] + 3);</div>
+            <div class="code-line" data-line="4">printf("%s\n", cpp[-1][-1] + 1);</div>
+        </div>
+
+        <!-- 动画演示区 -->
+        <div class="animate-area">
+            <!-- 字符串层 -->
+            <div class="layer">
+                <div class="layer-title">字符串层（最终指向）</div>
+                <div class="element-group">
+                    <div class="element" id="str-enter">ENTER</div>
+                    <div class="element" id="str-new">NEW</div>
+                    <div class="element" id="str-point">POINT</div>
+                    <div class="element" id="str-first">FIRST</div>
+                </div>
+            </div>
+
+            <!-- c数组层（一级指针） -->
+            <div class="layer">
+                <div class="layer-title">c数组（const char*）</div>
+                <div class="element-group">
+                    <div class="element" id="c0">c[0] → ENTER</div>
+                    <div class="element" id="c1">c[1] → NEW</div>
+                    <div class="element" id="c2">c[2] → POINT</div>
+                    <div class="element" id="c3">c[3] → FIRST</div>
+                </div>
+            </div>
+
+            <!-- cp数组层（二级指针） -->
+            <div class="layer">
+                <div class="layer-title">cp数组（const char**）</div>
+                <div class="element-group">
+                    <div class="element" id="cp0">cp[0] → c[3]</div>
+                    <div class="element" id="cp1">cp[1] → c[2]</div>
+                    <div class="element" id="cp2">cp[2] → c[1]</div>
+                    <div class="element" id="cp3">cp[3] → c[0]</div>
+                </div>
+            </div>
+
+            <!-- cpp指针层（三级指针） -->
+            <div class="layer">
+                <div class="layer-title">cpp指针（const char***）</div>
+                <div class="element-group">
+                    <div class="element current" id="cpp">cpp → cp[0]
+                        <span class="arrow" id="cpp-arrow" style="top: -20px; left: 50%; transform: translateX(-50%);">↓</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制区 -->
+        <div class="control-area">
+            <button id="prevBtn" disabled>上一步</button>
+            <button id="nextBtn">下一步</button>
+            <button id="resetBtn">重置</button>
+        </div>
+
+        <!-- 输出区 -->
+        <div class="output-area">
+            <div class="output-title">输出结果</div>
+            <div id="outputContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // 步骤数据：每一步的状态变化和输出
+        const steps = [
+            // 初始状态
+            {
+                name: "初始",
+                codeLine: "init",
+                cppPoint: "cp0",
+                cp2Point: "c1", // cp[2]初始指向c[1]
+                highlight: [],
+                output: ""
+            },
+            // 第一步：**++cpp
+            {
+                name: "执行 **++cpp",
+                codeLine: "1",
+                cppPoint: "cp1",
+                cp2Point: "c1",
+                highlight: ["cpp", "cp1", "c2", "str-point"],
+                output: "POINT"
+            },
+            // 第二步：*-- * ++cpp + 3
+            {
+                name: "执行 *-- * ++cpp + 3",
+                codeLine: "2",
+                cppPoint: "cp2",
+                cp2Point: "c0", // cp[2]修改为指向c[0]
+                highlight: ["cpp", "cp2", "c0", "str-enter"],
+                output: "ER"
+            },
+            // 第三步：*cpp[-2] + 3
+            {
+                name: "执行 *cpp[-2] + 3",
+                codeLine: "3",
+                cppPoint: "cp2",
+                cp2Point: "c0",
+                highlight: ["cpp", "cp0", "c3", "str-first"],
+                output: "ST"
+            },
+            // 第四步：cpp[-1][-1] + 1
+            {
+                name: "执行 cpp[-1][-1] + 1",
+                codeLine: "4",
+                cppPoint: "cp2",
+                cp2Point: "c0",
+                highlight: ["cpp", "cp1", "c1", "str-new"],
+                output: "EW"
+            }
+        ];
+
+        // 全局状态
+        let currentStep = 0;
+
+        // DOM元素
+        const codeArea = document.getElementById("codeArea");
+        const cppElement = document.getElementById("cpp");
+        const cppArrow = document.getElementById("cpp-arrow");
+        const cp2Element = document.getElementById("cp2");
+        const outputContent = document.getElementById("outputContent");
+        const prevBtn = document.getElementById("prevBtn");
+        const nextBtn = document.getElementById("nextBtn");
+        const resetBtn = document.getElementById("resetBtn");
+
+        // 初始化/更新视图
+        function updateView() {
+            const step = steps[currentStep];
+            
+            // 1. 高亮当前代码行
+            document.querySelectorAll(".code-line").forEach(line => {
+                line.classList.remove("highlight");
+                if (line.dataset.line === step.codeLine) {
+                    line.classList.add("highlight");
+                }
+            });
+
+            // 2. 更新cpp指向
+            const cpTarget = document.getElementById(step.cppPoint);
+            const cpTargetRect = cpTarget.getBoundingClientRect();
+            const cppRect = cppElement.getBoundingClientRect();
+            // 调整箭头位置
+            cppArrow.style.top = `${(cpTargetRect.top - cppRect.top) / 2}px`;
+            cppArrow.style.left = `${cpTargetRect.left - cppRect.left + cpTargetRect.width/2 - 10}px`;
+            cppArrow.style.transform = "none";
+            cppElement.innerHTML = `cpp → ${step.cppPoint.replace("cp", "cp[") + "]"}<span class="arrow" id="cpp-arrow" style="top: ${(cpTargetRect.top - cppRect.top) / 2}px; left: ${cpTargetRect.left - cppRect.left + cpTargetRect.width/2 - 10}px;">→</span>`;
+
+            // 3. 更新cp[2]指向
+            cp2Element.innerHTML = `cp[2] → ${step.cp2Point.replace("c", "c[") + "]"}`;
+
+            // 4. 高亮当前指向的元素
+            document.querySelectorAll(".element").forEach(el => {
+                el.classList.remove("current", "pointed");
+            });
+            cppElement.classList.add("current");
+            step.highlight.forEach(id => {
+                document.getElementById(id)?.classList.add("pointed");
+            });
+
+            // 5. 更新输出
+            if (step.output) {
+                const outputLine = document.createElement("div");
+                outputLine.className = "output-line";
+                outputLine.innerText = `第${currentStep}步输出：${step.output}`;
+                // 第一步清空，后续追加
+                if (currentStep === 1) {
+                    outputContent.innerHTML = "";
+                }
+                outputContent.appendChild(outputLine);
+            }
+
+            // 6. 控制按钮状态
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === steps.length - 1;
+        }
+
+        // 事件绑定
+        nextBtn.addEventListener("click", () => {
+            currentStep++;
+            updateView();
+        });
+
+        prevBtn.addEventListener("click", () => {
+            currentStep--;
+            updateView();
+        });
+
+        resetBtn.addEventListener("click", () => {
+            currentStep = 0;
+            outputContent.innerHTML = "";
+            updateView();
+        });
+
+        // 初始化
+        updateView();
+    </script>
+</body>
+</html>
