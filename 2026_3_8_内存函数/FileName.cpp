@@ -42,6 +42,7 @@ void* my_memmove(void* dest, void* src, size_t num)
 	return ret;
 }
 
+//内存拷贝
 void test1()
 {
 	int arr1[] = { 1,2,3,4,5,6,7,8,9,10 };
@@ -55,6 +56,7 @@ void test1()
 	printf("\n");
 }
 
+//内存移动
 void test2()
 {
 	int arr1[] = { 1,2,3,4,5,6,7,8,9,10 };
@@ -64,13 +66,44 @@ void test2()
 	{
 		printf("%d ", arr1[i]);
 	}
+	printf("\n");
 }
 
+//内存比较
+void test3()
+{
+	int arr1[] = { 1,2,3,4,5 };
+	int arr2[] = { 1,2,3 };
+	int ret = memcmp(arr1, arr2, 4);
+	printf("%d\n", ret);
+}
+
+//内存设置
+void test4()
+{
+	char arr1[] = "hello world";
+	memset(arr1 + 6, 'x', 4);
+	printf("%s\n", arr1);
+}
+//memset设置每个字节而不是每个整形
+void test5()
+{
+	int arr[10] = { 0 };
+	memset(arr, 1, 40);
+	int i = 0;
+	for (i = 0; i < 10; i++)
+	{
+		printf("%d\n", arr[i]);
+	}
+}
 
 int main()
 {
 	test1();
 	test2();
+	test3();
+	test4();
+	test5();
 
 
 
