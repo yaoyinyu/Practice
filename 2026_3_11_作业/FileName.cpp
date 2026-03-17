@@ -288,27 +288,81 @@ int main()
 	//else
 	//	printf("no\n");
 
+	//int n = 0;
+	//int m = 0;
+	//scanf("%d %d", &n, &m);
+	//int arr[10][10] = { 0 };
+	//int i = 0;
+	//int j = 0;
+	//for (i = 0; i < n; i++)
+	//{
+	//	for (j = 0; j < m; j++)
+	//	{
+	//		scanf("%d", &arr[i][j]);
+	//	}
+	//}
+	//for (i = 0; i < m; i++)
+	//{
+	//	for (j = 0; j < n; j++)
+	//	{
+	//		printf("%d ", arr[j][i]);
+	//	}
+	//	printf("\n");
+	//}
+
+	//int n = 0;
+	//scanf("%d", &n);
+	//int arr[10][10] = { 0 };
+	//int i = 0;
+	//int j = 0;
+	//int flag = 1;	//是上三角矩阵
+	//for (i = 0; i < n; i++)
+	//{
+	//	for (j = 0; j < n; j++)
+	//	{
+	//		scanf("%d", &arr[i][j]);
+	//	}
+	//}	
+	//for (i = 0; i < n; i++)
+	//{
+	//	for (j = 0; j < i; j++)
+	//	{
+	//		if (arr[i][j] != 0)
+	//		{
+	//			flag = 0;
+	//			goto end;
+	//		}
+	//	}
+	//}
+	//end:
+	//	if (flag == 0)
+	//		printf("no\n");
+	//	else
+	//		printf("yes\n");
+
 	int n = 0;
-	int m = 0;
-	scanf("%d %d", &n, &m);
-	int arr[10][10] = { 0 };
+	scanf("%d", &n);
+	int arr[100] = { 0 };
+	int flag1 = 0;
+	int flag2 = 0;
 	int i = 0;
-	int j = 0;
 	for (i = 0; i < n; i++)
 	{
-		for (j = 0; j < m; j++)
+		scanf("%d", &arr[i]);
+		if (i > 0)
 		{
-			scanf("%d", &arr[i][j]);
+			if (arr[i] > arr[i - 1])
+				flag1 = 1;
+			else if (arr[i] == arr[i - 1]);
+			else
+				flag2 = 1;
 		}
 	}
-	for (i = 0; i < m; i++)
-	{
-		for (j = 0; j < n; j++)
-		{
-			printf("%d ", arr[j][i]);
-		}
-		printf("\n");
-	}
+	if (flag1 + flag2 <= 1)
+		printf("yeah");
+	else
+		printf("no");
+
 	
 	
 	return	0;
