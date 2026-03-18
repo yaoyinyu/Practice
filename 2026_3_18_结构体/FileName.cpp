@@ -10,9 +10,9 @@ struct Stu
 
 struct Node
 {
-	int data;
-	struct Node next;
-};
+	int data;	
+	struct Node* next;		//结构体的自引用，结构体内不能包含同类型的结构体
+}* Linklest;
 
 int main()
 {
