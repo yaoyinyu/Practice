@@ -1,6 +1,6 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS 1
 
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -10,7 +10,6 @@
 #define TEST_DATA_ROWS 20
 #define TEST_DATA_COLS 64
 
-// 函数声明
 int validateMac(const char* mac);
 int validateRaw(char* raw, int* rawSize);
 void hexStringToBytes(const char* hex, unsigned char* bytes, int len);
@@ -43,19 +42,16 @@ int main(int argc, char* argv[]) {
     }
 
     // 校验MAC
-    if (!validateMac(testMac)) 
-        return 1;
+    if (!validateMac(testMac)) goto pause_exit;
 
     // 校验RAW
-    if (!validateRaw(testRaw, &rawSize)) 
-        return 1;
+    if (!validateRaw(testRaw, &rawSize)) goto pause_exit;
 
     // 转换RAW为字节数组
     hexStringToBytes(testRaw, testData[0], rawSize);
 
     // 解析packets
-    if (!parsePackets(testData[0], rawSize, testData, &packetNum)) 
-        return 1;
+    if (!parsePackets(testData[0], rawSize, testData, &packetNum)) goto pause_exit;
 
     // 生成ADVPKT (最多packetNum-1个packet)
     generateAtString(testData, 1, 31, packetNum - 1, advPktString, &advPktNum);
@@ -63,10 +59,19 @@ int main(int argc, char* argv[]) {
     // 生成SCANRES (剩余的packet)
     generateAtString(testData, 1 + advPktNum, 31, packetNum - advPktNum, scanPktString, &scanPktNum);
 
-    // 输出结果
+    // 输出
+    printf("\n--- 结果 ---\n");
     printf("AT+ADVPKT=%s\n", advPktString);
     printf("AT+SCANRES=%s\n", scanPktString);
     printf("AT+MAC=%s\n", testMac);
+
+pause_exit:
+    printf("\n按回车键退出...");
+
+    // 清理输入缓冲区
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+    getchar(); 
 
     return 0;
 }
@@ -89,7 +94,7 @@ int validateMac(const char* mac) {
 // 校验RAW数据
 int validateRaw(char* raw, int* rawSize) {
     char* p = raw;
-    // 去掉0x前缀
+    // 去0x
     if (strncmp(raw, "0x", 2) == 0 || strncmp(raw, "0X", 2) == 0) p += 2;
 
     int len = strlen(p);
