@@ -10,7 +10,7 @@ void Inintcontact(Contact* pc)
 	memset(pc->data, 0, sizeof(pc->data));
 }
 
-//添加人
+//添加信息
 void AddContact(Contact* pc)
 {
 	assert(pc);
