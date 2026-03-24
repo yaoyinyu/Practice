@@ -93,3 +93,66 @@ void DelContcat(Contact* pc)
 	pc->count--;
 	printf("删除成功\n");
 }
+
+//查找信息
+void SearchContcat(Contact* pc)
+{
+	assert(pc);
+	char name[MAX_NAME] = { 0 };
+	printf("输入要查找人的名字");
+	scanf("%s", name);
+	int pos = FindByName(pc, name);
+	if (pos == -1)
+	{
+		printf("不存才此人\n");
+		return;
+	}
+	printf("%-20s\t%-5s\t%-5s\t%-12s\t%-30s\n", "姓名", "年龄", "性别", "电话", "地址");
+	printf("%-20s\t%-5d\t%-5s\t%-12s\t%-30s\n", pc->data[pos].name,
+		pc->data[pos].age,
+		pc->data[pos].sex,
+		pc->data[pos].tele,
+		pc->data[pos].addr);
+}
+
+//修改信息
+void ModifyContcat(Contact* pc)
+{
+	assert(pc);
+	char name[MAX_NAME] = { 0 };
+	printf("输入要修改人的名字");
+	scanf("%s", name);
+
+	//修改
+	int pos = FindByName(pc, name);
+	if (pos == -1)
+	{
+		printf("不存才此人\n");
+		return;
+	}
+
+	//修改
+	printf("请输入名字：");
+	scanf("%s", pc->data[pos].name);
+	printf("请输入年龄：");
+	scanf("%d", &(pc->data[pos].age));
+	printf("请输入性别：");
+	scanf("%s", pc->data[pos].sex);
+	printf("请输入电话：");
+	scanf("%s", pc->data[pos].tele);
+	printf("请输入地址：");
+	scanf("%s", pc->data[pos].addr);
+}
+
+int cmp_peo_by_name(const void* e1, const void* e2)
+{
+	return strcmp(((PeoInfo*)e1)->name, ((PeoInfo*)e2)->name);
+}
+
+//排序信息（姓名）
+void SostContact(Contact* pc)
+{
+	assert(pc);
+	qsort(pc->data, pc->count, sizeof(PeoInfo), cmp_peo_by_name);
+	printf("排序成功\n");
+}

@@ -3,6 +3,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<assert.h>
+#include<stdlib.h>
 
 #define MAX 100
 #define MAX_NAME 20
@@ -39,3 +40,12 @@ void ShowContact(const Contact* pc);
 
 //删除信息
 void DelContcat(Contact* pc);
+
+//查找信息
+void SearchContcat(Contact* pc);
+
+//修改信息
+void ModifyContcat(Contact* pc);
+
+//排序信息（姓名）
+void SostContact(Contact* pc);

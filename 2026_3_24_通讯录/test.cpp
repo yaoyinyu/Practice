@@ -32,13 +32,16 @@ int main()
 			DelContcat(&con);
 			break;
 		case 3:
+			SearchContcat(&con);
 			break;
 		case 4:
+			ModifyContcat(&con);
 			break;
 		case 5:
 			ShowContact(&con);
 			break;
 		case 6:
+			SostContact(&con);
 			break;
 		case 0:
 			printf("已退出通讯录");
