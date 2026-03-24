@@ -32,7 +32,7 @@ typedef struct Contact
 //初始化通讯录
 void Inintcontact(Contact* pc);
 
-//添加人
+//添加信息
 void AddContact(Contact* pc);
 
 //显示信息
