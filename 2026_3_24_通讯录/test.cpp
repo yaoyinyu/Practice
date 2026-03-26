@@ -47,7 +47,7 @@ int main()
 			printf("已退出通讯录");
 			break;
 		default:
-			printf("输入错误请重新输入\n");
+			printf("输入错误请重新输入序号\n");
 		}
 	} while (input);
 
