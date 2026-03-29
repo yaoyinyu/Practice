@@ -23,6 +23,8 @@ int main()
 		printf("%d ", *(p + i));
 	}
 
+	printf("\n");
+
 	free(p);
 	p = NULL;
 

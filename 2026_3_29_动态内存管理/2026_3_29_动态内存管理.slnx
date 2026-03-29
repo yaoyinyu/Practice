@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="2026_3_29_动态内存管理.vcxproj" />
+  <Project Path="2026_3_29_动态内存管理.vcxproj" Id="276b547a-5df8-47cb-83de-24f244b99644" />
 </Solution>
