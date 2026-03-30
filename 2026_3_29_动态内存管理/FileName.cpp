@@ -11,6 +11,8 @@ int main()
 	int a = 10;
 	int arr[10] = { 0 };
 	int* p = (int*)malloc(40);
+	printf("\n");
+
 	if (p == NULL)
 	{
 		printf("%s\n", strerror(errno));
