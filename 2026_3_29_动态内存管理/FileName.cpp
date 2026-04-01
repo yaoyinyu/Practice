@@ -44,31 +44,48 @@ int main()
 	//free(b);
 	//b = NULL;
 
-	int* p = (int*)malloc(40);
-	if (NULL == p)
-	{
-		printf("%s\n", strerror(errno));
-		return 1;
-	}
+	//int* p = (int*)malloc(40);
+	//if (NULL == p)
+	//{
+	//	printf("%s\n", strerror(errno));
+	//	return 1;
+	//}
 
-	int i = 0;
-	for (i = 0; i < 10; i++)
-	{
-		*(p + i) = i + 1;
-	}
-	//扩容
-	int *ptr = (int*)realloc(p, 80);
-	if (ptr != NULL)
-	{
-		p = ptr;
-	}
-	for (i = 0; i < 10; i++)
-	{
-		printf("%d ", *(p + i));
-	}
-	free(p);
-	p = NULL;
+	//int i = 0;
+	//for (i = 0; i < 10; i++)
+	//{
+	//	*(p + i) = i + 1;
+	//}
+	////扩容
+	//int *ptr = (int*)realloc(p, 80);
+	//if (ptr != NULL)
+	//{
+	//	p = ptr;
+	//}
+	//for (i = 0; i < 10; i++)
+	//{
+	//	printf("%d ", *(p + i));
+	//}
 
+	////free只能释放动态内存指针空间
+	//free(p);
+	//p = NULL;
+
+	//int* p = (int*)malloc(40);
+	//if (p == NULL)
+	//{
+	//	printf("%s\n", strerror(errno));
+	//	return 1;
+	//}
+	//int i = 0;
+	//for (i = 0; i < 10; i++)
+	//{
+	//	*(p + i) = i + 1;
+	//}
+	//int* ptr = (int*)realloc(p, 80);		//新的加旧的空间大小
+
+
+	
 
 	return 0;
 
