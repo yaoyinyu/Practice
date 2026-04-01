@@ -10,6 +10,8 @@
 #define MAX_SEX 10
 #define MAX_TELE 12
 #define MAX_ADDR 30
+#define DEFAULT_SZ 3
+#define INC_SZ 2
 
 
 //人的信息
@@ -22,15 +24,28 @@ typedef struct PeoInfo
 	char addr[MAX_ADDR];
 }PeoInfo;
 
+//静态
 //通讯录信息
+//typedef struct Contact
+//{
+//	PeoInfo data[MAX];
+//	int count = 0;
+//}Contact;
+
+//动态
 typedef struct Contact
 {
-	PeoInfo data[MAX];
+	PeoInfo *data;
 	int count = 0;
+	//当前容量
+	int capacity;
 }Contact;
 
 //初始化通讯录
-void Inintcontact(Contact* pc);
+int Inintcontact(Contact* pc);
+
+//销毁信息
+void DestroyContact(Contact* pc);
 
 //添加信息
 void AddContact(Contact* pc);
