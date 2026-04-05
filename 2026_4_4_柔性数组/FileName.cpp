@@ -2,6 +2,12 @@
 
 #include<stdio.h>
 
+struct S
+{
+	int i;
+	int arr[];
+};
+
 int main()
 {
 	printf("\n");
