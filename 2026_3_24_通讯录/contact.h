@@ -64,3 +64,9 @@ void ModifyContcat(Contact* pc);
 
 //排序信息（姓名）
 void SostContact(Contact* pc);
+
+//保存通讯录
+void SaveContact(const Contact* pc);
+
+//加载通讯录
+void LoadContact(Contact* pc);

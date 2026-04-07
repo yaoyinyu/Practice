@@ -55,6 +55,7 @@ int main()
 			SostContact(&con);
 			break;
 		case EXIT:
+			SaveContact(&con);
 			DestroyContact(&con);
 			printf("已退出通讯录");
 			break;

@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="2026_4_7_文件读写.vcxproj" />
+  <Project Path="2026_4_7_文件读写.vcxproj" Id="c80888d8-5da8-433a-bee3-03c755a511ae" />
 </Solution>
