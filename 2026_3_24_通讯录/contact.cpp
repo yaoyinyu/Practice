@@ -34,7 +34,7 @@ void LoadContact(Contact* pc)
 	//读取文件
 	PeoInfo tmp = { 0 };
 
-	while (fread(&tmp, sizeof(PeoInfo), 1, pfRead))
+	while (fread(&tmp, sizeof(PeoInfo), 1, pfRead) == 1)
 	{
 		//判断是否需要增容
 		CheckCapacity(pc);
