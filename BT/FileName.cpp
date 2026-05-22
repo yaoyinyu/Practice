@@ -17,61 +17,97 @@ int parsePackets(const unsigned char* rawBytes, int rawSize, unsigned char testD
 void generateAtString(const unsigned char testData[TEST_DATA_ROWS][TEST_DATA_COLS], int startPacket, int maxTotalLen, int maxPackets, char* atString, int* usedPackets);
 void bytesToHexString(const unsigned char* bytes, int len, char* hexString);
 
+// 清理标准输入缓冲区的辅助函数
+void clearInputBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 int main(int argc, char* argv[]) {
     char testMac[MAC_LEN + 1];
     char testRaw[RAW_MAX_LEN + 3];
     int rawSize;
-    unsigned char testData[TEST_DATA_ROWS][TEST_DATA_COLS] = { 0 };
+    unsigned char testData[TEST_DATA_ROWS][TEST_DATA_COLS];
     int packetNum;
-    char advPktString[256] = { 0 };
-    char scanPktString[256] = { 0 };
+    char advPktString[256];
+    char scanPktString[256];
     int advPktNum, scanPktNum;
 
-    // 输入处理
-    if (argc >= 3) {
-        strncpy(testMac, argv[1], MAC_LEN);
-        testMac[MAC_LEN] = '\0';
-        strncpy(testRaw, argv[2], RAW_MAX_LEN + 2);
-        testRaw[RAW_MAX_LEN + 2] = '\0';
+    // 判断是否为交互模式（没有带命令行参数运行）
+    int isInteractive = (argc < 3);
+
+    do {
+        // 1. 每次循环前清空关键数据缓存，防止上一轮数据残留
+        memset(testData, 0, sizeof(testData));
+        memset(advPktString, 0, sizeof(advPktString));
+        memset(scanPktString, 0, sizeof(scanPktString));
+        rawSize = 0;
+        packetNum = 0;
+
+        // 2. 输入处理
+        if (!isInteractive) {
+            strncpy(testMac, argv[1], MAC_LEN);
+            testMac[MAC_LEN] = '\0';
+            strncpy(testRaw, argv[2], RAW_MAX_LEN + 2);
+            testRaw[RAW_MAX_LEN + 2] = '\0';
+        }
+        else {
+            printf("\n========================================\n");
+            printf("请输入12位MAC地址（输入 q 或 exit 退出）：");
+            if (scanf("%12s", testMac) != 1) break;
+            clearInputBuffer(); // 清除残留数据和回车
+
+            // 检查是否主动退出
+            if (strcmp(testMac, "q") == 0 || strcmp(testMac, "Q") == 0 ||
+                strcmp(testMac, "exit") == 0 || strcmp(testMac, "EXIT") == 0) {
+                break;
+            }
+
+            printf("请输入RAW数据（十六进制，可带0x前缀）：");
+            if (scanf("%126s", testRaw) != 1) break;
+            clearInputBuffer(); // 清除残留数据和回车
+        }
+
+        // 3. 校验MAC
+        if (!validateMac(testMac)) {
+            if (isInteractive) continue; // 交互模式下，出错则进入下一次循环重新输入
+            else break;
+        }
+
+        // 4. 校验RAW
+        if (!validateRaw(testRaw, &rawSize)) {
+            if (isInteractive) continue;
+            else break;
+        }
+
+        // 5. 转换RAW为字节数组
+        hexStringToBytes(testRaw, testData[0], rawSize);
+
+        // 6. 解析packets
+        if (!parsePackets(testData[0], rawSize, testData, &packetNum)) {
+            if (isInteractive) continue;
+            else break;
+        }
+
+        // 7. 生成ADVPKT (最多packetNum-1个packet)
+        generateAtString(testData, 1, 31, packetNum - 1, advPktString, &advPktNum);
+
+        // 8. 生成SCANRES (剩余的packet)
+        generateAtString(testData, 1 + advPktNum, 31, packetNum - advPktNum, scanPktString, &scanPktNum);
+
+        // 9. 输出结果
+        printf("\n--- 结果 ---\n");
+        printf("AT+ADVPKT=%s\n", advPktString);
+        printf("AT+SCANRES=%s\n", scanPktString);
+        printf("AT+MAC=%s\n", testMac);
+
+    } while (isInteractive); // 如果是交互模式，则继续循环
+
+    // 10. 仅在交互模式下主动退出时提示
+    if (isInteractive) {
+        printf("\n程序已退出。按回车键关闭窗口...");
+        getchar();
     }
-    else {
-        printf("请输入12位MAC地址（不带冒号）：");
-        scanf("%12s", testMac);
-        printf("请输入RAW数据（十六进制，可带0x前缀）：");
-        scanf("%126s", testRaw);
-    }
-
-    // 校验MAC
-    if (!validateMac(testMac)) goto pause_exit;
-
-    // 校验RAW
-    if (!validateRaw(testRaw, &rawSize)) goto pause_exit;
-
-    // 转换RAW为字节数组
-    hexStringToBytes(testRaw, testData[0], rawSize);
-
-    // 解析packets
-    if (!parsePackets(testData[0], rawSize, testData, &packetNum)) goto pause_exit;
-
-    // 生成ADVPKT (最多packetNum-1个packet)
-    generateAtString(testData, 1, 31, packetNum - 1, advPktString, &advPktNum);
-
-    // 生成SCANRES (剩余的packet)
-    generateAtString(testData, 1 + advPktNum, 31, packetNum - advPktNum, scanPktString, &scanPktNum);
-
-    // 输出
-    printf("\n--- 结果 ---\n");
-    printf("AT+ADVPKT=%s\n", advPktString);
-    printf("AT+SCANRES=%s\n", scanPktString);
-    printf("AT+MAC=%s\n", testMac);
-
-pause_exit:
-    printf("\n按回车键退出...");
-
-    // 清理输入缓冲区
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF);
-    getchar(); 
 
     return 0;
 }
@@ -138,6 +174,11 @@ int parsePackets(const unsigned char* rawBytes, int rawSize, unsigned char testD
             fprintf(stderr, "RAW数据解析错误：长度不足\n");
             return 0;
         }
+        // 安全检测：防止单个包的长度超出二维数组列宽
+        if (pktLen > TEST_DATA_COLS) {
+            fprintf(stderr, "RAW数据解析错误：单包长度超过限制\n");
+            return 0;
+        }
         for (int jj = 0; jj < pktLen; jj++) {
             testData[1 + *packetNum][jj] = rawBytes[j + jj];
         }
@@ -166,7 +207,8 @@ void generateAtString(const unsigned char testData[TEST_DATA_ROWS][TEST_DATA_COL
         int pktLen = testData[pktIndex][0] + 1;
         if (totalLen + pktLen > maxTotalLen) break;
 
-        char hexStr[128] = { 0 };
+        // 安全修改：将缓存大小调整为 TEST_DATA_COLS * 2 + 1，防止越界写
+        char hexStr[TEST_DATA_COLS * 2 + 1] = { 0 };
         bytesToHexString(testData[pktIndex], pktLen, hexStr);
         strcat(atString, hexStr);
         totalLen += pktLen;
