@@ -15,6 +15,7 @@ enum Option
 
 void menu()
 {
+	printf("这是一个通讯录程序，你可以测试\n");
 	printf("1.add      2.del\n");
 	printf("3.search   4.modify\n");
 	printf("5.show     6.sort\n");
